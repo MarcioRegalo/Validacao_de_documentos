@@ -1,0 +1,109 @@
+   public class Cnpj
+    {
+        private static string GeraDigito(string cnpj)
+        {
+            int pPeso = 2;
+            int pSoma = 0;
+
+            for (int i = cnpj.Length - 1; i >= 0; i--)
+            {
+                pSoma += pPeso * Convert.ToInt32(cnpj[i].ToString());
+                pPeso++;
+
+                if (pPeso == 10)
+                    pPeso = 2;
+            }
+
+            int pNumero = (11 - (pSoma % 11));
+            if (pNumero > 9)
+                pNumero = 0;
+
+            return pNumero.ToString();
+        }
+
+        public bool Validar(string cnpj)
+        {
+            // Se for vazio
+            if (String.IsNullOrEmpty(cnpj.Trim()))
+                return false;
+
+            // Retirar todos os caracteres que não sejam numéricos
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < cnpj.Length; i++)
+            {
+                if (char.IsNumber(cnpj[i]))
+                    stringBuilder.Append(cnpj[i].ToString());
+            }
+
+            string aux = stringBuilder.ToString();
+
+            // O tamanho do CNPJ tem que ser 14
+            if (aux.Length != 14)
+                return false;
+
+            // Caso coloque todos os numeros iguais
+            switch (aux)
+            {
+                case "11111111111111":
+                    return false;
+                case "00000000000000":
+                    return false;
+                case "22222222222222":
+                    return false;
+                case "33333333333333":
+                    return false;
+                case "44444444444444":
+                    return false;
+                case "55555555555555":
+                    return false;
+                case "66666666666666":
+                    return false;
+                case "77777777777777":
+                    return false;
+                case "88888888888888":
+                    return false;
+                case "99999999999999":
+                    return false;
+            }
+
+            // Guardo os dígitos para compará-lo no final
+            string pDigito = aux.Substring(12, 2);
+            aux = aux.Substring(0, 12);
+
+            //Calculo do 1º digito
+            aux += GeraDigito(aux);
+
+            //Calculo do 2º digito
+            aux += GeraDigito(aux);
+
+
+            //Comparo os dígitos calculadoscom os guardados anteriormente
+
+            return pDigito == aux.Substring(12, 2);
+        }
+
+        public static string MontarMascara(string cnpj)
+        {
+            // Retirar todos os caracteres que não sejam numéricos
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < cnpj.Length; i++)
+            {
+                if (char.IsNumber(cnpj[i]))
+                    stringBuilder.Append(cnpj[i].ToString());
+            }
+
+            string aux = stringBuilder.ToString();
+
+            if (aux.Length != 14)
+                return cnpj;
+
+            string pmontado = "";
+            pmontado = aux.Substring(0, 2) + ".";
+            pmontado += aux.Substring(2, 3) + ".";
+            pmontado += aux.Substring(5, 3) + "/";
+            pmontado += aux.Substring(8, 4) + "-";
+            pmontado += aux.Substring(12, 2);
+
+            return pmontado;
+        }
+    }
